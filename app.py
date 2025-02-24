@@ -54,13 +54,13 @@ def recommend_model(responses):
     # Get the top 3 most frequent models
     top_models = model_counts.most_common(3)
 
-    # Calculate the total frequency of the top 3 models
-    total_top_frequency = sum(count for model, count in top_models)
+    # Calculate total count of the top 3 models
+    total_top_counts = sum(count for model, count in top_models)
 
-    # Calculate percentages for the top 3 models
+    # Format the top models with their percentages
     recommended_models = []
     for model, count in top_models:
-        percentage = (count / total_top_frequency) * 100
+        percentage = (count / total_top_counts) * 100
         recommended_models.append(f"{model} ({percentage:.1f}%)")
 
     return recommended_models
@@ -93,7 +93,10 @@ options = [
 responses = []
 for i, question in enumerate(questions):
     st.write(f"**Question {i + 1}:** {question}")
-    response = st.radio(f"Select an option for Question {i + 1}:", options[i], key=f"q{i + 1}")
+    response = st.radio(f"Select an option for Question {i + 1}:", options[i], index=None, key=f"q{i + 1}")  # No preselected option
+    if response is None:
+        st.warning("Please select an option for all questions.")
+        st.stop()  # Stop execution if any question is unanswered
     responses.append(response[0])  # Extract the first character (a, b, c) from the selected option
 
 # Submit button
@@ -105,4 +108,6 @@ if st.button("Submit"):
     if isinstance(recommended_models, str):  # Error message
         st.error(recommended_models)
     else:
-        st.success(f"Recommended Blended Learning Model(s): {', '.join(recommended_models)}")
+        st.success("Recommended Blended Learning Models:")
+        for model in recommended_models:
+            st.write(f"- {model}")
