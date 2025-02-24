@@ -51,11 +51,16 @@ def recommend_model(responses):
         if response in response_to_model_mapping[question_key]:
             model_counts.update(response_to_model_mapping[question_key][response])
 
-    # Determine the most recommended model(s)
-    max_count = max(model_counts.values())
-    recommended_models = [model for model, count in model_counts.items() if count == max_count]
+    # Calculate total number of model recommendations
+    total_recommendations = sum(model_counts.values())
 
-    return recommended_models
+    # Get the top 2 most frequent models with their percentages
+    top_models = []
+    for model, count in model_counts.most_common(2):
+        percentage = (count / total_recommendations) * 100
+        top_models.append(f"{model} ({percentage:.1f}%)")
+
+    return top_models
 
 # Streamlit UI
 st.title("Blended Learning Model Recommendation System")
